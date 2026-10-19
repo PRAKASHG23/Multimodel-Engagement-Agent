@@ -1,0 +1,8 @@
+{
+  "min_presence_seconds": 30,
+  "window_seconds": 10,
+  "process_fps": 5,
+  "noisy_db": -30,
+  "low_engagement": 40,
+  "high_engagement": 70
+}
