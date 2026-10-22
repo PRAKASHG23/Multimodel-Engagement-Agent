@@ -23,6 +23,27 @@ streamlit run dashboard/app.py                         # optional dashboard
 pytest -q                                              # run tests
 ```
 
+The dashboard has no instructor or student login/sign-up forms. Anyone who can open the dashboard
+can access its features and local student records. Run it only on a trusted machine/network; do not
+expose it to the public internet. Set `ATTENDANCE_DATA_DIR` in the same terminal to change the
+local data folder (defaults to `./output`):
+
+```bash
+export ATTENDANCE_DATA_DIR='./output'
+streamlit run dashboard/app.py
+```
+
+The dashboard includes an optional student registry and timed, camera-based attendance mode. It uses
+OpenCV's LBPH face recognizer and stores enrollment details, photos, and attendance records in
+`student_registry.sqlite3` inside the configured data folder (by default, `output/`) on the machine
+running Streamlit. Install the listed
+`opencv-contrib-python` dependency before using face attendance. Dashboard features are not protected
+by accounts; all visitors can access student registration, named attendance records, and analytics.
+Keep the dashboard on a trusted private network and protect the machine and data folder accordingly.
+The feature cards open dedicated attendance, student registration, live attendance, engagement,
+instructor notes, and learner-summary pages. The attendance page filters records by status and
+provides a CSV download.
+
 Recorded-video audio extraction needs `ffmpeg` on your PATH; live microphone capture needs PortAudio
 (via `sounddevice`). If either is missing the agent **falls back to vision-only scoring** and says so.
 Pass `--audio file.wav` to supply audio separately, `--no-audio` to skip it, and
@@ -68,10 +89,33 @@ components and plain-language reasons (e.g. "noisy room", "often looking away").
 **Suggestion rules:** sustained low engagement → interactive activity; sharp drop → break/recap; peak →
 note what worked; sustained high noise → classroom-management cue; long silence → invite discussion.
 
+## Optional student registration and attendance
+
+In the dashboard, open **Student registration** to add a student's name, college/school, unique
+enrollment number, and a clear, front-facing photo (captured with the camera or uploaded). The app
+rejects duplicate enrollment numbers and photos without exactly one detectable face. A consent
+confirmation is required before saving. The original photo and normalized face template are stored
+in the local SQLite database at `output/student_registry.sqlite3`.
+
+Open **Live face attendance**, choose the camera, class duration, minimum recognized presence time,
+and face-match confidence limit, then start a session. The camera is sampled at the configured
+processing rate; only recognized sample intervals count toward each student's cumulative presence.
+At the end of the timed session, every registered student receives a saved `present` or `absent`
+record, with recognized duration and first/last-seen times. Lower LBPH confidence values are stricter;
+the default limit is 60. The webcam feed is processed in memory and is not saved.
+
+Face matching is fallible and can mistake or miss students; instructors must check records before
+using them as official attendance. Use this feature only with appropriate student consent and in
+accordance with applicable privacy rules. The existing demo, video analyzer, and engagement reports
+remain anonymous and do not use the registry.
+
 ## Privacy by design
 
 - Fully offline: no network calls, no cloud APIs.
-- No face recognition, embeddings or face images are stored. Participants are anonymous IDs (`P1`, `P2`…).
+- The original classroom analyzer does not identify people; participants remain anonymous IDs (`P1`, `P2`…).
+- The optional registry is separate and opt-in: it stores identifying details, original face photos,
+  face templates, and named attendance records in the local SQLite database. Restrict access to the
+  machine and database, and retain/delete the database according to your institution's policy.
 - Raw audio is analysed in memory; only aggregate metrics are saved.
 - Student analytics contain only that learner's own data: no rankings, leaderboards or comparisons.
 

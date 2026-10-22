@@ -4,6 +4,7 @@ __pycache__/
 venv/
 .pytest_cache/
 output/
+.streamlit/secrets.toml
 *.mp4
 *.avi
 *.wav
