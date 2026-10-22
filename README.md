@@ -137,3 +137,4 @@ Be aware of these honest limits:
 - **Audio levels are relative to your microphone gain** (dBFS). Calibrate `noisy_db` / `quiet_db` per room.
 - **Speech detection is energy-based**, so it detects sound activity, not who is speaking or what is said.
 - Defaults are reasonable starting points, not validated cut-offs. Pilot them on your own sessions.
+# Multimodel-Engagement-Agent
